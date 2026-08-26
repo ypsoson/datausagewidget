@@ -3,8 +3,7 @@
 A lightweight Android application with a home screen widget showing used mobile data
 
 ## Screenshots
-![App screenshot](assets/screenshots/app.jpg)
-![Widget screenshot](assets/screenshots/widget.png)
+| ![App screenshot](assets/screenshots/app.jpg) | ![Widget screenshot](assets/screenshots/widget.png) |
 
 ## Features
 - Lightweight
