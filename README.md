@@ -2,6 +2,9 @@
 # Data usage widget
 A lightweight Android application with a home screen widget showing used mobile data
 
+> [!NOTE]
+> This project was written by a human developer with assistance from AI.
+
 ## Screenshots
 | App screenshot | Widget screenshot |
 | :---: | :---: |
