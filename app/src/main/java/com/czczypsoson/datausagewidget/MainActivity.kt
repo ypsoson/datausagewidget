@@ -50,7 +50,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.czczypsoson.datausagewidget.ui.theme.DataUsageWidgetTheme
+import com.czczypsoson.datausagewidget.ui.DataUsageWidgetTheme
 
 
 sealed class Screen(val route: String) {

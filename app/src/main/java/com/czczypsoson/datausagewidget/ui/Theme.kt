@@ -1,4 +1,4 @@
-package com.czczypsoson.datausagewidget.ui.theme
+package com.czczypsoson.datausagewidget.ui
 
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme

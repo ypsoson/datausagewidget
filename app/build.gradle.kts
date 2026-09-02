@@ -2,7 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
 
-    id("com.mikepenz.aboutlibraries.plugin") version "15.1.1"
+    id("com.mikepenz.aboutlibraries.plugin") version "15.2.0"
 }
 
 android {
