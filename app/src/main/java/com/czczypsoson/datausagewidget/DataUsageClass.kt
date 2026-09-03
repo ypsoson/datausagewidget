@@ -49,7 +49,7 @@ class DataUsageManager(private val context: Context) {
         } else if (megabytes >= 1000) {
             String.format(Locale.US, "%.3f GB", megabytes / 1000.0)
         } else {
-            String.format(Locale.US, "%.1f MB", megabytes)
+            String.format(Locale.US, "%d MB", megabytes)
         }
     }
 }
