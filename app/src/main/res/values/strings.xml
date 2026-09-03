@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">Data Usage Widget</string>
+    <string name="icon">Icon</string>
+
     <string name="about_title">About</string>
     <string name="top_about">About</string>
 
