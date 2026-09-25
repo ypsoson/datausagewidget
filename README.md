@@ -17,5 +17,8 @@ A lightweight Android application with a home screen widget showing used mobile 
 - Material 3
 - Material You
 
+&nbsp;
+> [!NOTE]
+> This project teeds to use androidx.navigation.compose v2.9.8
 ## Installation
 Download the latest `.apk` file from [Releases](../../releases).
