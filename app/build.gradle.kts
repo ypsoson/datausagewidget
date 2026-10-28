@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
 
+    id("org.jetbrains.kotlin.plugin.serialization") version "2.4.21"
     id("com.mikepenz.aboutlibraries.plugin") version "15.3.0"
 }
 
@@ -11,12 +12,16 @@ android {
         version = release(37)
     }
 
+    buildFeatures {
+        buildConfig = true
+    }
+
     defaultConfig {
         applicationId = "com.czczypsoson.datausagewidget"
         minSdk = 26
         targetSdk = 37
-        versionCode = 3
-        versionName = "1.0.2"
+        versionCode = 4
+        versionName = "1.0.3"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -53,6 +58,7 @@ dependencies {
     // Glance pro tvorbu Jetpack Compose widgetů
     implementation(libs.androidx.glance.appwidget)
     implementation(libs.androidx.glance.material3)
+    implementation(libs.kotlinx.serialization.json)
 
     testImplementation(libs.junit)
 
