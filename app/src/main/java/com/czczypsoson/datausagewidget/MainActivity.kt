@@ -1,5 +1,6 @@
 package com.czczypsoson.datausagewidget
 
+import com.czczypsoson.datausagewidget.BuildConfig
 import android.app.AppOpsManager
 import android.appwidget.AppWidgetManager
 import android.content.ComponentName
@@ -25,7 +26,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -34,23 +37,35 @@ import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TooltipBox
 import androidx.compose.material3.TooltipDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.czczypsoson.datausagewidget.ui.DataUsageWidgetTheme
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
+import java.net.HttpURLConnection
+import java.net.URL
 
 
 sealed class Screen(val route: String) {
@@ -181,6 +196,30 @@ fun MainScreen(
     onRequestPermission: () -> Unit,
     onAboutScreen: () -> Unit
 ) {
+    val uriHandler = LocalUriHandler.current
+    var updateRelease by remember { mutableStateOf<GithubRelease?>(null) }
+
+    // Spustí se automaticky jednou při startu aplikace
+    LaunchedEffect(Unit) {
+        val release = checkForUpdate()
+        if (release != null) {
+            val currentVersion = BuildConfig.VERSION_NAME
+            if (isNewVersionAvailable(currentVersion, release.tag_name)) {
+                updateRelease = release
+            }
+        }
+    }
+
+    // Pokud je k dispozici nová verze, ukáže se dialog
+    updateRelease?.let { release ->
+        UpdateDialogWithBrowser(
+            newVersion = release.tag_name,
+            releaseUrl = release.html_url,
+            onDismiss = { updateRelease = null }
+        )
+    }
+
+
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
 
     Scaffold(
@@ -269,4 +308,82 @@ private fun requestAddWidget(context: Context) {
         // Vyvolá systémový dialog pro přidání widgetu na plochu
         appWidgetManager.requestPinAppWidget(myProvider, null, null)
     }
+}
+
+
+@Composable
+fun UpdateDialogWithBrowser(
+    newVersion: String,
+    releaseUrl: String,
+    onDismiss: () -> Unit
+) {
+    val uriHandler = LocalUriHandler.current
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(stringResource(R.string.update_title)) },
+        text = {
+            Column() {
+                Text(stringResource(R.string.update_text))
+                Text(stringResource(R.string.update_current) + ": " + BuildConfig.VERSION_NAME)
+                Text(stringResource(R.string.update_new) + ": " + newVersion)
+            }
+        },
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    uriHandler.openUri(releaseUrl)
+                    onDismiss()
+                },
+                colors = ButtonDefaults.textButtonColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                )
+            ) {
+                Text(stringResource(R.string.update_download))
+            }
+        },
+        dismissButton = {
+            TextButton(
+                onClick = onDismiss,
+                colors = ButtonDefaults.textButtonColors(
+                    contentColor = MaterialTheme.colorScheme.onSurface
+                )
+            ) {
+                Text(stringResource(R.string.update_ignore))
+            }
+        }
+    )
+}
+
+@Serializable
+data class GithubRelease(
+    val tag_name: String,
+    val html_url: String
+)
+
+suspend fun checkForUpdate(): GithubRelease? = withContext(Dispatchers.IO) {
+    try {
+        val url = URL("https://api.github.com/repos/ypsoson/datausagewidget/releases/latest")
+        val connection = (url.openConnection() as HttpURLConnection).apply {
+            requestMethod = "GET"
+            setRequestProperty("User-Agent", "Android-App")
+            connectTimeout = 5000
+            readTimeout = 5000
+        }
+
+        if (connection.responseCode == 200) {
+            val responseJson = connection.inputStream.bufferedReader().use { it.readText() }
+            val json = Json { ignoreUnknownKeys = true }
+            return@withContext json.decodeFromString<GithubRelease>(responseJson)
+        }
+    } catch (e: Exception) {
+        e.printStackTrace()
+    }
+    return@withContext null
+}
+fun isNewVersionAvailable(current: String, latest: String): Boolean {
+    val cleanCurrent = current.removePrefix("v")
+    val cleanLatest = latest.removePrefix("v")
+    return cleanCurrent != cleanLatest && cleanLatest > cleanCurrent
 }
