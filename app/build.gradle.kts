@@ -2,7 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
 
-    id("com.mikepenz.aboutlibraries.plugin") version "15.2.0"
+    id("com.mikepenz.aboutlibraries.plugin") version "15.3.0"
 }
 
 android {
@@ -14,7 +14,7 @@ android {
     defaultConfig {
         applicationId = "com.czczypsoson.datausagewidget"
         minSdk = 26
-        targetSdk = 36
+        targetSdk = 37
         versionCode = 3
         versionName = "1.0.2"
 
