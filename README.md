@@ -3,6 +3,8 @@
 A lightweight Android application with a home screen widget showing used mobile data
 
 > [!NOTE]
+> [![Co-created with AI](https://madebyhuman.iamjarl.com/badges/co-created-white.svg)](https://madebyhuman.iamjarl.com)
+> 
 > This project was written by a human developer with assistance from AI.
 
 ## Screenshots
